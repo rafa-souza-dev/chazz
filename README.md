@@ -176,6 +176,8 @@ Authorization: Basic <base64(username:password)>
 
 O webhook requer autenticação Basic Auth usando as credenciais configuradas em `WEBHOOK_USERNAME` e `WEBHOOK_PASSWORD`.
 
+**Observação**: O webhook atual faz referência ao formato do gateway de pagamentos [Woovi](https://woovi.com/). Caso queira usar esse gateway, você pode se cadastrar em https://woovi.com/
+
 ```http
 POST /webhooks/received-pix
 Content-Type: application/json
