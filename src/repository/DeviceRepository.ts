@@ -19,13 +19,16 @@ export class DeviceRepository {
         })
     }
 
-    static listDevicesToTurnOff() {
-        return prisma.device.findMany({
+    static turnOffPendingDevices() {
+        return prisma.device.updateMany({
             where: {
                 turnOffAt: {
                     lte: new Date(),
                     not: null
                 }
+            },
+            data: {
+                turnOffAt: null
             }
         })
     }
