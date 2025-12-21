@@ -1,5 +1,6 @@
 import { DeviceNotFoundError } from "../errors/DeviceNotFoundError";
 import { DeviceRepository } from "../repository/DeviceRepository";
+import { TuyaDeviceService } from "../service/tuya-device.service";
 
 type RescheduleDeviceTurnOffParams = {
     deviceId: number;
@@ -23,6 +24,7 @@ export class RescheduleDeviceTurnOff {
             turnOffAt.getTime() + (device.secondsPerCycle * 1000)
         );
 
+        await TuyaDeviceService.turnOn(device.externalId);
         await DeviceRepository.updateDevice(device.id, { turnOffAt: rescheduledTurnOffAt });
     }
 }

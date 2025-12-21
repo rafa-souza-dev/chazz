@@ -19,8 +19,17 @@ export class DeviceRepository {
         })
     }
 
-    static turnOffPendingDevices() {
-        return prisma.device.updateMany({
+    static async turnOffPendingDevices() {
+        const devices = await prisma.device.findMany({
+            where: {
+                turnOffAt: {
+                    lte: new Date(),
+                    not: null
+                }
+            }
+        });
+
+        await prisma.device.updateMany({
             where: {
                 turnOffAt: {
                     lte: new Date(),
@@ -30,6 +39,8 @@ export class DeviceRepository {
             data: {
                 turnOffAt: null
             }
-        })
+        });
+
+        return devices;
     }
 }

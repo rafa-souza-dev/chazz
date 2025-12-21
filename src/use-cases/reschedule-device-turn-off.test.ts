@@ -3,11 +3,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { RescheduleDeviceTurnOff } from './reschedule-device-turn-off';
 import { DeviceRepository } from '../repository/DeviceRepository';
 import { DeviceNotFoundError } from '../errors/DeviceNotFoundError';
+import { TuyaDeviceService } from '../service/tuya-device.service';
 
 vi.mock('../repository/DeviceRepository', () => ({
   DeviceRepository: {
     findDevice: vi.fn(),
     updateDevice: vi.fn(),
+  },
+}));
+
+vi.mock('../service/tuya-device.service', () => ({
+  TuyaDeviceService: {
+    turnOn: vi.fn(),
   },
 }));
 
@@ -57,6 +64,7 @@ describe('RescheduleDeviceTurnOff', () => {
       const turnOffAt = new Date('2024-01-01T10:00:00Z');
       const device = {
         id: deviceId,
+        externalId: 'device1',
         centsPerCycle: 1000,
         secondsPerCycle: 3600,
         turnOffAt,
@@ -64,10 +72,12 @@ describe('RescheduleDeviceTurnOff', () => {
 
       vi.mocked(DeviceRepository.findDevice).mockResolvedValue(device as any);
       vi.mocked(DeviceRepository.updateDevice).mockResolvedValue(device as any);
+      vi.mocked(TuyaDeviceService.turnOn).mockResolvedValue({} as any);
 
       await RescheduleDeviceTurnOff.handle({ deviceId, paidCents });
 
       expect(DeviceRepository.findDevice).toHaveBeenCalledWith(deviceId);
+      expect(TuyaDeviceService.turnOn).toHaveBeenCalledWith('device1');
       expect(DeviceRepository.updateDevice).toHaveBeenCalledWith(deviceId, {
         turnOffAt: new Date('2024-01-01T11:00:00Z'),
       });
@@ -79,6 +89,7 @@ describe('RescheduleDeviceTurnOff', () => {
       const turnOffAt = new Date('2024-01-01T10:00:00Z');
       const device = {
         id: deviceId,
+        externalId: 'device2',
         centsPerCycle: 1000,
         secondsPerCycle: 1800,
         turnOffAt,
@@ -86,10 +97,12 @@ describe('RescheduleDeviceTurnOff', () => {
 
       vi.mocked(DeviceRepository.findDevice).mockResolvedValue(device as any);
       vi.mocked(DeviceRepository.updateDevice).mockResolvedValue(device as any);
+      vi.mocked(TuyaDeviceService.turnOn).mockResolvedValue({} as any);
 
       await RescheduleDeviceTurnOff.handle({ deviceId, paidCents });
 
       expect(DeviceRepository.findDevice).toHaveBeenCalledWith(deviceId);
+      expect(TuyaDeviceService.turnOn).toHaveBeenCalledWith('device2');
       expect(DeviceRepository.updateDevice).toHaveBeenCalledWith(deviceId, {
         turnOffAt: new Date('2024-01-01T10:30:00Z'),
       });
@@ -100,6 +113,7 @@ describe('RescheduleDeviceTurnOff', () => {
       const paidCents = 1000;
       const device = {
         id: deviceId,
+        externalId: 'device3',
         centsPerCycle: 1000,
         secondsPerCycle: 7200,
         turnOffAt: null,
@@ -107,12 +121,14 @@ describe('RescheduleDeviceTurnOff', () => {
 
       vi.mocked(DeviceRepository.findDevice).mockResolvedValue(device as any);
       vi.mocked(DeviceRepository.updateDevice).mockResolvedValue(device as any);
+      vi.mocked(TuyaDeviceService.turnOn).mockResolvedValue({} as any);
 
       const beforeCall = new Date();
       await RescheduleDeviceTurnOff.handle({ deviceId, paidCents });
       const afterCall = new Date();
 
       expect(DeviceRepository.findDevice).toHaveBeenCalledWith(deviceId);
+      expect(TuyaDeviceService.turnOn).toHaveBeenCalledWith('device3');
       expect(DeviceRepository.updateDevice).toHaveBeenCalledTimes(1);
 
       const updateCall = vi.mocked(DeviceRepository.updateDevice).mock.calls[0];
@@ -131,6 +147,7 @@ describe('RescheduleDeviceTurnOff', () => {
       const turnOffAt = new Date('2024-01-01T10:00:00Z');
       const device = {
         id: deviceId,
+        externalId: 'device4',
         centsPerCycle: 1000,
         secondsPerCycle: 900,
         turnOffAt,
@@ -138,9 +155,11 @@ describe('RescheduleDeviceTurnOff', () => {
 
       vi.mocked(DeviceRepository.findDevice).mockResolvedValue(device as any);
       vi.mocked(DeviceRepository.updateDevice).mockResolvedValue(device as any);
+      vi.mocked(TuyaDeviceService.turnOn).mockResolvedValue({} as any);
 
       await RescheduleDeviceTurnOff.handle({ deviceId, paidCents });
 
+      expect(TuyaDeviceService.turnOn).toHaveBeenCalledWith('device4');
       expect(DeviceRepository.updateDevice).toHaveBeenCalledWith(deviceId, {
         turnOffAt: new Date('2024-01-01T10:15:00Z'),
       });
