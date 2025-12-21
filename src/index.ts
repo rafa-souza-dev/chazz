@@ -4,6 +4,7 @@ import cron from 'node-cron';
 
 import { logger } from './lib/logger';
 import { webhookRoutes } from './api/webhook-routes';
+import { deviceRoutes } from './api/device-routes';
 import { TurnOffPendingDevices } from './use-cases/turn-off-pending-devices';
 
 const app = express();
@@ -20,6 +21,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 app.use(webhookRoutes);
+app.use(deviceRoutes);
 
 cron.schedule('*/5 * * * * *', async () => {
   logger.debug('Executing TurnOffPendingDevices cronjob');

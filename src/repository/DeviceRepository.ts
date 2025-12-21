@@ -1,4 +1,4 @@
-import { DeviceUpdateInput } from "../../generated/prisma/models";
+import { DeviceCreateInput, DeviceUpdateInput } from "../../generated/prisma/models";
 import { prisma } from "../lib/prisma";
 import { logger } from "../lib/logger";
 
@@ -14,6 +14,26 @@ export class DeviceRepository {
         return device;
     }
 
+    static async findAllDevices() {
+        logger.debug('Finding all devices');
+        const devices = await prisma.device.findMany({
+            orderBy: {
+                id: 'asc'
+            }
+        });
+        logger.debug({ deviceCount: devices.length }, 'All devices query completed');
+        return devices;
+    }
+
+    static async createDevice(data: DeviceCreateInput) {
+        logger.debug({ data }, 'Creating device');
+        const device = await prisma.device.create({
+            data
+        });
+        logger.debug({ deviceId: device.id }, 'Device created');
+        return device;
+    }
+
     static async updateDevice(id: number, data: DeviceUpdateInput) {
         logger.debug({ deviceId: id, data }, 'Updating device');
         const updated = await prisma.device.update({
@@ -24,6 +44,17 @@ export class DeviceRepository {
         });
         logger.debug({ deviceId: id }, 'Device updated');
         return updated;
+    }
+
+    static async deleteDevice(id: number) {
+        logger.debug({ deviceId: id }, 'Deleting device');
+        const device = await prisma.device.delete({
+            where: {
+                id
+            }
+        });
+        logger.debug({ deviceId: id }, 'Device deleted');
+        return device;
     }
 
     static async turnOffPendingDevices() {
