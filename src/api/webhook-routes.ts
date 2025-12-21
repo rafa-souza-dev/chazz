@@ -56,4 +56,3 @@ webhookRoutes.post('/webhooks/received-pix', basicAuthMiddleware, async (req: Re
     });
   }
 });
-
