@@ -1,6 +1,6 @@
 {
     "pixQrCode": {
-        "name": "Pix QrCode",
+        "name": "Device id_1",
         "value": 1000,
         "comment": "Pagamento Woovi",
         "identifier": "ea83401ed4834b3ea6f1f283b389af29",
@@ -14,7 +14,7 @@
     "pix": {
         "charge": null,
         "pixQrCode": {
-            "name": "Pix QrCode",
+            "name": "Device id_1",
             "value": 1000,
             "comment": "Pagamento Woovi",
             "identifier": "ea83401ed4834b3ea6f1f283b389af29",
