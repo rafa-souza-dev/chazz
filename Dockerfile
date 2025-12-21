@@ -17,6 +17,7 @@ COPY prisma.config.ts ./
 RUN npx prisma generate
 
 COPY tsconfig.json ./
+COPY tsup.config.ts ./
 COPY src ./src/
 
 RUN npm run build
