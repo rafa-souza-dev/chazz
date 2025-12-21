@@ -22,19 +22,25 @@ deviceRoutes.post('/devices', async (req: Request, res: Response) => {
     logger.debug({ payload: validatedPayload }, 'Device payload validated');
 
     const data: any = {
-      externalId: validatedPayload.externalId,
-      centsPerCycle: validatedPayload.centsPerCycle,
-      secondsPerCycle: validatedPayload.secondsPerCycle,
+      externalId: validatedPayload.external_id,
+      centsPerCycle: validatedPayload.cents_per_cycle,
+      secondsPerCycle: validatedPayload.seconds_per_cycle,
     };
 
-    if (validatedPayload.turnOffAt !== undefined) {
-      data.turnOffAt = validatedPayload.turnOffAt ? new Date(validatedPayload.turnOffAt) : null;
+    if (validatedPayload.turn_off_at !== undefined) {
+      data.turnOffAt = validatedPayload.turn_off_at ? new Date(validatedPayload.turn_off_at) : null;
     }
 
     const device = await CreateDevice.handle({ data });
 
     logger.info({ deviceId: device.id }, 'Device created successfully');
-    res.status(201).json(device);
+    res.status(201).json({
+      id: device.id,
+      external_id: device.externalId,
+      cents_per_cycle: device.centsPerCycle,
+      seconds_per_cycle: device.secondsPerCycle,
+      turn_off_at: device.turnOffAt,
+    });
   } catch (error) {
     if (error instanceof ZodError) {
       logger.warn({ errors: error.issues }, 'Invalid device payload');
@@ -57,7 +63,14 @@ deviceRoutes.get('/devices', async (req: Request, res: Response) => {
   try {
     const devices = await ListDevices.handle();
     logger.info({ deviceCount: devices.length }, 'Devices listed successfully');
-    res.status(200).json(devices);
+    const devicesResponse = devices.map(device => ({
+      id: device.id,
+      external_id: device.externalId,
+      cents_per_cycle: device.centsPerCycle,
+      seconds_per_cycle: device.secondsPerCycle,
+      turn_off_at: device.turnOffAt,
+    }));
+    res.status(200).json(devicesResponse);
   } catch (error) {
     logger.error({ error }, 'Unexpected error listing devices');
     res.status(500).json({
@@ -80,7 +93,13 @@ deviceRoutes.get('/devices/:id', async (req: Request, res: Response) => {
   try {
     const device = await GetDevice.handle({ id: deviceId });
     logger.info({ deviceId }, 'Device retrieved successfully');
-    res.status(200).json(device);
+    res.status(200).json({
+      id: device.id,
+      external_id: device.externalId,
+      cents_per_cycle: device.centsPerCycle,
+      seconds_per_cycle: device.secondsPerCycle,
+      turn_off_at: device.turnOffAt,
+    });
   } catch (error) {
     if (error instanceof DeviceNotFoundError) {
       logger.warn({ error: error.message }, 'Device not found');
@@ -112,23 +131,29 @@ deviceRoutes.put('/devices/:id', async (req: Request, res: Response) => {
     logger.debug({ payload: validatedPayload }, 'Device update payload validated');
 
     const data: any = {};
-    if (validatedPayload.externalId !== undefined) {
-      data.externalId = validatedPayload.externalId;
+    if (validatedPayload.external_id !== undefined) {
+      data.externalId = validatedPayload.external_id;
     }
-    if (validatedPayload.centsPerCycle !== undefined) {
-      data.centsPerCycle = validatedPayload.centsPerCycle;
+    if (validatedPayload.cents_per_cycle !== undefined) {
+      data.centsPerCycle = validatedPayload.cents_per_cycle;
     }
-    if (validatedPayload.secondsPerCycle !== undefined) {
-      data.secondsPerCycle = validatedPayload.secondsPerCycle;
+    if (validatedPayload.seconds_per_cycle !== undefined) {
+      data.secondsPerCycle = validatedPayload.seconds_per_cycle;
     }
-    if (validatedPayload.turnOffAt !== undefined) {
-      data.turnOffAt = validatedPayload.turnOffAt ? new Date(validatedPayload.turnOffAt) : null;
+    if (validatedPayload.turn_off_at !== undefined) {
+      data.turnOffAt = validatedPayload.turn_off_at ? new Date(validatedPayload.turn_off_at) : null;
     }
 
     const device = await UpdateDevice.handle({ id: deviceId, data });
 
     logger.info({ deviceId }, 'Device updated successfully');
-    res.status(200).json(device);
+    res.status(200).json({
+      id: device.id,
+      external_id: device.externalId,
+      cents_per_cycle: device.centsPerCycle,
+      seconds_per_cycle: device.secondsPerCycle,
+      turn_off_at: device.turnOffAt,
+    });
   } catch (error) {
     if (error instanceof ZodError) {
       logger.warn({ errors: error.issues }, 'Invalid device update payload');
@@ -166,7 +191,13 @@ deviceRoutes.delete('/devices/:id', async (req: Request, res: Response) => {
   try {
     const device = await DeleteDevice.handle({ id: deviceId });
     logger.info({ deviceId }, 'Device deleted successfully');
-    res.status(200).json(device);
+    res.status(200).json({
+      id: device.id,
+      external_id: device.externalId,
+      cents_per_cycle: device.centsPerCycle,
+      seconds_per_cycle: device.secondsPerCycle,
+      turn_off_at: device.turnOffAt,
+    });
   } catch (error) {
     if (error instanceof DeviceNotFoundError) {
       logger.warn({ error: error.message }, 'Device not found');

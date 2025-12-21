@@ -1,17 +1,17 @@
 import { z } from 'zod';
 
 export const createDeviceSchema = z.object({
-  externalId: z.string().min(1),
-  centsPerCycle: z.number().int().positive(),
-  secondsPerCycle: z.number().int().positive(),
-  turnOffAt: z.string().datetime().nullable().optional(),
+  external_id: z.string().min(1),
+  cents_per_cycle: z.number().int().positive(),
+  seconds_per_cycle: z.number().int().positive(),
+  turn_off_at: z.string().datetime().nullable().optional(),
 });
 
 export const updateDeviceSchema = z.object({
-  externalId: z.string().min(1).optional(),
-  centsPerCycle: z.number().int().positive().optional(),
-  secondsPerCycle: z.number().int().positive().optional(),
-  turnOffAt: z.string().datetime().optional().nullable(),
+  external_id: z.string().min(1).optional(),
+  cents_per_cycle: z.number().int().positive().optional(),
+  seconds_per_cycle: z.number().int().positive().optional(),
+  turn_off_at: z.string().datetime().optional().nullable(),
 });
 
 export type CreateDevicePayload = z.infer<typeof createDeviceSchema>;
