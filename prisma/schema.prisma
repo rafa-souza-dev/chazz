@@ -1,0 +1,19 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Device {
+  id              Int       @id @default(autoincrement())
+  externalId      String    @unique @map("external_id")
+  centsPerCycle   Int       @map("cents_per_cycle")
+  secondsPerCycle Int       @map("seconds_per_cycle")
+  turnOffAt       DateTime? @map("turn_off_at")
+}
