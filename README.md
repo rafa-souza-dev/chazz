@@ -59,8 +59,9 @@ PORT=3000
 DATABASE_URL="file:./dev.db"
 
 # Tuya API
-TUYA_ACCESS_ID=seu_access_id
+TUYA_BASE_URL=https://openapi.tuyacn.com
 TUYA_ACCESS_KEY=seu_access_key
+TUYA_SECRET_KEY=seu_secret_key
 
 # Autenticação Webhook PIX
 WEBHOOK_USERNAME=usuario_webhook
@@ -253,8 +254,9 @@ src/
 |----------|-----------|-------------|
 | `PORT` | Porta do servidor | Não (padrão: 3000) |
 | `DATABASE_URL` | URL de conexão do banco de dados | Sim |
-| `TUYA_ACCESS_ID` | Access ID da API Tuya | Sim |
+| `TUYA_BASE_URL` | URL base da API Tuya | Não (padrão: https://openapi.tuyacn.com) |
 | `TUYA_ACCESS_KEY` | Access Key da API Tuya | Sim |
+| `TUYA_SECRET_KEY` | Secret Key da API Tuya | Sim |
 | `WEBHOOK_USERNAME` | Usuário para autenticação de webhooks | Sim |
 | `WEBHOOK_PASSWORD` | Senha para autenticação de webhooks | Sim |
 | `DEVICE_API_USERNAME` | Usuário para autenticação da API de devices | Sim |

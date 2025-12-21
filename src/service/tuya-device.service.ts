@@ -2,7 +2,7 @@ import "dotenv/config";
 import { TuyaContext } from '@tuya/tuya-connector-nodejs';
 
 const tuya = new TuyaContext({
-    baseUrl: 'https://openapi.tuyacn.com',
+    baseUrl: process.env.TUYA_BASE_URL || 'https://openapi.tuyaus.com',
     accessKey: process.env.TUYA_ACCESS_KEY as string,
     secretKey: process.env.TUYA_SECRET_KEY as string,
 });
