@@ -8,17 +8,29 @@ const tuya = new TuyaContext({
 });
 
 export class TuyaDeviceService {
-    static async turnOff(deviceExternalId: string) {
-        return await tuya.device.changeFreezeState({
-            device_id: deviceExternalId,
-            state: 0
+    private static async sendCommand(
+        deviceExternalId: string,
+        value: boolean,
+    ) {
+        return tuya.request({
+            method: 'POST',
+            path: `/v1.0/iot-03/devices/${deviceExternalId}/commands`,
+            body: {
+                commands: [
+                    {
+                        code: 'switch_1',
+                        value,
+                    },
+                ],
+            },
         });
     }
 
     static async turnOn(deviceExternalId: string) {
-        return await tuya.device.changeFreezeState({
-            device_id: deviceExternalId,
-            state: 1
-        });
+        return this.sendCommand(deviceExternalId, true);
+    }
+
+    static async turnOff(deviceExternalId: string) {
+        return this.sendCommand(deviceExternalId, false);
     }
 }
