@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { createServer } from 'http';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import cron from 'node-cron';
@@ -6,6 +7,7 @@ import cron from 'node-cron';
 import { logger } from './lib/logger';
 import { webhookRoutes } from './api/webhook-routes';
 import { deviceRoutes } from './api/device-routes';
+import { initDeviceUpdatesWebSocket } from './realtime/device-updates-broadcast';
 import { TurnOffPendingDevices } from './use-cases/turn-off-pending-devices';
 
 const app = express();
@@ -35,8 +37,12 @@ cron.schedule('*/5 * * * * *', async () => {
   }
 });
 
-app.listen(PORT, () => {
+const server = createServer(app);
+initDeviceUpdatesWebSocket(server);
+
+server.listen(PORT, () => {
   logger.info({ port: PORT }, 'Server started');
   logger.info({ path: '/health' }, 'Health check endpoint available');
+  logger.info({ path: '/ws' }, 'WebSocket endpoint available');
   logger.info({ interval: '5 seconds' }, 'Cronjob started: TurnOffPendingDevices');
 });

@@ -1,9 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { RescheduleDeviceTurnOff } from './reschedule-device-turn-off';
+import { broadcastDeviceRescheduled } from '../realtime/device-updates-broadcast';
 import { DeviceRepository } from '../repository/DeviceRepository';
 import { DeviceNotFoundError } from '../errors/DeviceNotFoundError';
 import { TuyaDeviceService } from '../service/tuya-device.service';
+
+vi.mock('../realtime/device-updates-broadcast', () => ({
+  broadcastDeviceRescheduled: vi.fn(),
+}));
 
 vi.mock('../repository/DeviceRepository', () => ({
   DeviceRepository: {
@@ -38,6 +43,7 @@ describe('RescheduleDeviceTurnOff', () => {
 
       expect(DeviceRepository.findDevice).toHaveBeenCalledWith(deviceId);
       expect(DeviceRepository.updateDevice).not.toHaveBeenCalled();
+      expect(broadcastDeviceRescheduled).not.toHaveBeenCalled();
     });
 
     it('should not update device when paidCents is less than centsPerCycle', async () => {
@@ -56,6 +62,7 @@ describe('RescheduleDeviceTurnOff', () => {
 
       expect(DeviceRepository.findDevice).toHaveBeenCalledWith(deviceId);
       expect(DeviceRepository.updateDevice).not.toHaveBeenCalled();
+      expect(broadcastDeviceRescheduled).not.toHaveBeenCalled();
     });
 
     it('should update turnOffAt when paidCents equals centsPerCycle', async () => {
@@ -81,6 +88,10 @@ describe('RescheduleDeviceTurnOff', () => {
       expect(DeviceRepository.updateDevice).toHaveBeenCalledWith(deviceId, {
         turnOffAt: new Date('2024-01-01T11:00:00Z'),
       });
+      expect(broadcastDeviceRescheduled).toHaveBeenCalledWith(
+        deviceId,
+        new Date('2024-01-01T11:00:00Z'),
+      );
     });
 
     it('should update turnOffAt when paidCents is greater than centsPerCycle', async () => {
@@ -106,6 +117,10 @@ describe('RescheduleDeviceTurnOff', () => {
       expect(DeviceRepository.updateDevice).toHaveBeenCalledWith(deviceId, {
         turnOffAt: new Date('2024-01-01T10:30:00Z'),
       });
+      expect(broadcastDeviceRescheduled).toHaveBeenCalledWith(
+        deviceId,
+        new Date('2024-01-01T10:30:00Z'),
+      );
     });
 
     it('should use new Date() as base when turnOffAt is null', async () => {
@@ -139,6 +154,8 @@ describe('RescheduleDeviceTurnOff', () => {
 
       expect(rescheduledDate.getTime()).toBeGreaterThanOrEqual(expectedMin.getTime());
       expect(rescheduledDate.getTime()).toBeLessThanOrEqual(expectedMax.getTime());
+
+      expect(broadcastDeviceRescheduled).toHaveBeenCalledWith(deviceId, rescheduledDate);
     });
 
     it('should correctly calculate rescheduledTurnOffAt with different secondsPerCycle values', async () => {
@@ -163,6 +180,10 @@ describe('RescheduleDeviceTurnOff', () => {
       expect(DeviceRepository.updateDevice).toHaveBeenCalledWith(deviceId, {
         turnOffAt: new Date('2024-01-01T10:15:00Z'),
       });
+      expect(broadcastDeviceRescheduled).toHaveBeenCalledWith(
+        deviceId,
+        new Date('2024-01-01T10:15:00Z'),
+      );
     });
   });
 });

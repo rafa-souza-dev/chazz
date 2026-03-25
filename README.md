@@ -22,6 +22,7 @@ Sistema de monetização para tomadas inteligentes integradas com Tuya. O Chazz 
 
 - **Node.js** com TypeScript
 - **Express.js** para API REST
+- **ws** para WebSocket (atualizações em tempo real)
 - **Prisma** com SQLite para persistência
 - **Tuya Connector** para integração com dispositivos Tuya
 - **Zod** para validação de schemas
@@ -123,6 +124,22 @@ GET /health
 ```
 
 Retorna o status da aplicação.
+
+#### WebSocket (atualização de devices)
+
+Conecte em `ws://<host>:<porta>/ws` (em produção atrás de HTTPS, use `wss://`).
+
+Quando um pagamento válido reagenda o desligamento de um device (após o webhook PIX), o servidor envia a **mesma mensagem JSON** para todos os clientes conectados:
+
+```json
+{
+  "type": "device_rescheduled",
+  "device_id": 1,
+  "turn_off_at": "2024-01-01T11:00:00.000Z"
+}
+```
+
+O campo `turn_off_at` está em ISO 8601 (UTC). Nenhuma mensagem é enviada se o pagamento for insuficiente ou o device não existir.
 
 #### CRUD de Devices
 

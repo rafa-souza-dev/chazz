@@ -1,5 +1,6 @@
 import { DeviceNotFoundError } from "../errors/DeviceNotFoundError";
 import { DeviceRepository } from "../repository/DeviceRepository";
+import { broadcastDeviceRescheduled } from "../realtime/device-updates-broadcast";
 import { TuyaDeviceService } from "../service/tuya-device.service";
 import { logger } from "../lib/logger";
 
@@ -38,5 +39,6 @@ export class RescheduleDeviceTurnOff {
 
         await DeviceRepository.updateDevice(device.id, { turnOffAt: rescheduledTurnOffAt });
         logger.info({ deviceId, rescheduledTurnOffAt }, 'Device reschedule completed');
+        broadcastDeviceRescheduled(device.id, rescheduledTurnOffAt);
     }
 }
