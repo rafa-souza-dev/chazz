@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+import cors from 'cors';
 import cron from 'node-cron';
 
 import { logger } from './lib/logger';
@@ -10,6 +11,7 @@ import { TurnOffPendingDevices } from './use-cases/turn-off-pending-devices';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/health', (req: Request, res: Response) => {
