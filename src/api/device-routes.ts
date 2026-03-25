@@ -12,6 +12,28 @@ import { deviceAuthMiddleware } from './device-auth-middleware';
 
 export const deviceRoutes = express.Router();
 
+deviceRoutes.get('/devices', async (req: Request, res: Response) => {
+  logger.info({ path: '/devices' }, 'Received list devices request');
+
+  try {
+    const devices = await ListDevices.handle();
+    logger.info({ deviceCount: devices.length }, 'Devices listed successfully');
+    const devicesResponse = devices.map(device => ({
+      id: device.id,
+      external_id: device.externalId,
+      cents_per_cycle: device.centsPerCycle,
+      seconds_per_cycle: device.secondsPerCycle,
+      turn_off_at: device.turnOffAt,
+    }));
+    res.status(200).json(devicesResponse);
+  } catch (error) {
+    logger.error({ error }, 'Unexpected error listing devices');
+    res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+});
+
 deviceRoutes.use(deviceAuthMiddleware);
 
 deviceRoutes.post('/devices', async (req: Request, res: Response) => {
@@ -51,28 +73,6 @@ deviceRoutes.post('/devices', async (req: Request, res: Response) => {
     }
 
     logger.error({ error }, 'Unexpected error creating device');
-    res.status(500).json({
-      error: 'Internal server error',
-    });
-  }
-});
-
-deviceRoutes.get('/devices', async (req: Request, res: Response) => {
-  logger.info({ path: '/devices' }, 'Received list devices request');
-
-  try {
-    const devices = await ListDevices.handle();
-    logger.info({ deviceCount: devices.length }, 'Devices listed successfully');
-    const devicesResponse = devices.map(device => ({
-      id: device.id,
-      external_id: device.externalId,
-      cents_per_cycle: device.centsPerCycle,
-      seconds_per_cycle: device.secondsPerCycle,
-      turn_off_at: device.turnOffAt,
-    }));
-    res.status(200).json(devicesResponse);
-  } catch (error) {
-    logger.error({ error }, 'Unexpected error listing devices');
     res.status(500).json({
       error: 'Internal server error',
     });

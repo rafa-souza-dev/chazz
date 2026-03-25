@@ -126,7 +126,7 @@ Retorna o status da aplicação.
 
 #### CRUD de Devices
 
-Todas as rotas de devices requerem autenticação Basic Auth usando as credenciais configuradas em `DEVICE_API_USERNAME` e `DEVICE_API_PASSWORD`.
+`GET /devices` é público (sem autenticação). As demais rotas de devices exigem Basic Auth com `DEVICE_API_USERNAME` e `DEVICE_API_PASSWORD`.
 
 **Criar Device**
 ```http
@@ -142,10 +142,9 @@ Authorization: Basic <base64(username:password)>
 }
 ```
 
-**Listar Devices**
+**Listar Devices** (público)
 ```http
 GET /devices
-Authorization: Basic <base64(username:password)>
 ```
 
 **Buscar Device por ID**
